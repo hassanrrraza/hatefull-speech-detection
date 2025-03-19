@@ -1,0 +1,11 @@
+Hate_Speech_Detection/
+├── app.py                     # Main Flask application
+├── models/
+│   ├── model.pkl              # Serialized machine learning model
+│   └── vectorizer.pkl         # Serialized vectorizer
+├── templates/
+│   └── index.html             # HTML template
+├── static/
+│   └── css/
+│       └── styles.css         # External CSS file
+├── requirements.txt           # List of project dependencies

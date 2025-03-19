@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hateful Speech Detection</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>Hateful Speech Detection</h1>
+    </header>
+
+    <div class="container">
+        <form action="/" method="POST">
+            <textarea name="tweet" rows="5" placeholder="Enter a tweet..."></textarea>
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if prediction %}
+        <div class="result {{ 'positive' if prediction == 'Normal Tweet' else 'negative' }}">
+            <strong>Result:</strong> {{ prediction }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
