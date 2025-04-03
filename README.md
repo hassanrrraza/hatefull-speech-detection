@@ -34,7 +34,7 @@ The web application provides a user-friendly interface where users can input tex
 
 ## 🎬 Demo
 
-![Interface Preview](https://raw.githubusercontent.com/hassanrrraza/hateful_speech_flask/main/app/static/img/screenshot.PNG)
+![Interface Preview](https://raw.githubusercontent.com/hassanrrraza/hatefull-speech-detection/master/app/static/img/screenshot.png)
 
 *Screenshot of the application analyzing sample text*
 
