@@ -34,7 +34,7 @@ The web application provides a user-friendly interface where users can input tex
 
 ## 🎬 Demo
 
-![Demo Screenshot](static/img/demo-screenshot.png)
+![Demo Screenshot](hateful_speech_flask\app\static\img\demo-screenshot.png)
 
 *Screenshot of the application analyzing sample text*
 
