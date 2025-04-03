@@ -1,11 +1,31 @@
-Hate_Speech_Detection/
-├── app.py                     # Main Flask application
-├── models/
-│   ├── model.pkl              # Serialized machine learning model
-│   └── vectorizer.pkl         # Serialized vectorizer
-├── templates/
-│   └── index.html             # HTML template
-├── static/
-│   └── css/
-│       └── styles.css         # External CSS file
-├── requirements.txt           # List of project dependencies
+roman_urdu_hate_speech/
+│
+├── app/                      # Application package
+│   ├── __init__.py           # Initialize Flask app
+│   ├── routes.py             # Application routes
+│   └── utils.py              # Utility functions
+│
+├── models/                   # Trained models
+│   ├── model.pkl             # Serialized classifier model
+│   └── vectorizer.pkl        # Serialized text vectorizer
+│
+├── static/                   # Static files
+│   ├── css/                  # CSS stylesheets
+│   │   └── styles.css        # Main stylesheet
+│   └── img/                  # Images
+│
+├── templates/                # HTML templates
+│   └── index.html            # Main template
+│
+├── notebooks/                # Jupyter notebooks
+│   └── Hate_Speech_Detection.ipynb  # Model training notebook
+│
+├── data/                     # Data files
+│   ├── Dataset.csv           # Original dataset
+│   └── Preprocessed_Dataset.csv  # Processed dataset
+│
+├── .gitignore                # Git ignore file
+├── config.py                 # Configuration settings
+├── requirements.txt          # Project dependencies
+├── run.py                    # Application entry point
+└── README.md                 # Project documentation
