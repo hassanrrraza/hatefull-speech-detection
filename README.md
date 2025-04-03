@@ -35,7 +35,7 @@ The web application provides a user-friendly interface where users can input tex
 ## 🎬 Demo
 
 <p align="center">
-  <img src="https://github.com/hassanrrraza/hateful_speech_flask/app/static/img/demo-screenshot.png" width="700" alt="Interface Preview">
+  <img src="https://github.com/hassanrrraza/hateful_speech_flask/app/static/img/demo-screenshot.PNG" width="700" alt="Interface Preview">
 </p>
 hateful_speech_flask/app/static/img/demo-screenshot.png
 
