@@ -4,31 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hate Speech Detection | AI Analysis Tool </title>
+    <title>Roman Urdu Hate Speech Detection</title>
     <link rel="stylesheet" href="/static/css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/48/000000/shield.png">
 </head>
 
 <body>
     <div class="app-container">
         <header class="app-header">
             <div class="header-content">
-                <h1><i class="fas fa-shield-alt"></i> Hate Speech Detection</h1>
-                <p class="subtitle">Analyze Text for Harmful Content for Roman Urdu Language</p>
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1>Roman Urdu Hate Speech Detection</h1>
+                <p class="subtitle">AI-powered text analysis for harmful content detection</p>
             </div>
         </header>
 
         <main class="main-content">
+            <div class="features-section">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Instant Analysis</h3>
+                    <p>Real-time detection of harmful content</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3>Roman Urdu</h3>
+                    <p>Specialized for Roman Urdu language</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered</h3>
+                    <p>Using advanced machine learning models</p>
+                </div>
+            </div>
+
             <div class="analysis-container">
+                <div class="card-header">
+                    <h2><i class="fas fa-search"></i> Text Analysis</h2>
+                    <p>Enter your text below for instant hate speech detection</p>
+                </div>
                 <form action="/" method="POST" class="analysis-form">
                     <div class="input-group">
                         <label for="tweet-input">Enter Text for Analysis:</label>
                         <textarea 
                             id="tweet-input"
                             name="tweet" 
-                            rows="5" 
-                            placeholder="Type or paste your text here..."
+                            rows="4" 
+                            placeholder="Type or paste Roman Urdu text here..."
                             required></textarea>
                     </div>
                     <button type="submit" class="analyze-btn">
@@ -37,25 +69,56 @@
                 </form>
 
                 {% if prediction %}
-                <div class="result-container {{ 'positive' if prediction == 'Normal Tweet' else 'negative' }}">
-                    <div class="result-icon">
-                        {% if prediction == 'Normal Tweet' %}
-                        <i class="fas fa-check-circle"></i>
-                        {% else %}
-                        <i class="fas fa-exclamation-triangle"></i>
-                        {% endif %}
-                    </div>
-                    <div class="result-content">
-                        <h3>Analysis Result</h3>
-                        <p class="result-text">{{ prediction }}</p>
+                <div class="result-card">
+                    <div class="result-container {{ 'positive' if prediction == 'Normal Tweet' else 'negative' }}">
+                        <div class="result-header">
+                            <div class="result-icon">
+                                {% if prediction == 'Normal Tweet' %}
+                                <i class="fas fa-check-circle"></i>
+                                {% else %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {% endif %}
+                            </div>
+                            <h3>Analysis Result</h3>
+                        </div>
+                        <div class="result-content">
+                            <p class="result-label">Classification:</p>
+                            <p class="result-text">{{ prediction }}</p>
+                            <div class="result-info">
+                                {% if prediction == 'Normal Tweet' %}
+                                <p><i class="fas fa-info-circle"></i> This text appears to be normal without harmful content.</p>
+                                {% else %}
+                                <p><i class="fas fa-info-circle"></i> This text may contain harmful content.</p>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
             </div>
+
+            <div class="info-section">
+                <div class="info-card">
+                    <h3><i class="fas fa-question-circle"></i> About This Tool</h3>
+                    <p>This tool uses machine learning to detect hate speech in Roman Urdu text. The model has been trained on a dataset of tweets and can classify text as either normal or hateful.</p>
+                </div>
+            </div>
         </main>
 
         <footer class="app-footer">
-            <p>Powered by Machine Learning | <i class="fas fa-code"></i> AI Analysis Tool</p>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Roman Urdu Hate Speech Detection</span>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/hassanrrraza/hatefull-speech-detection" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; 2025 Hassan Raza. All rights reserved.</p>
+                    <p>Powered by Machine Learning</p>
+                </div>
+            </div>
         </footer>
     </div>
 </body>
