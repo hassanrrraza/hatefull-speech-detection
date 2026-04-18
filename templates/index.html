@@ -4,50 +4,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hate Speech Detection | AI Analysis Tool </title>
+    <meta name="description" content="AI-powered Hate Speech Detection tool for analyzing text content in Roman Urdu. Identify harmful content with machine learning.">
+    <meta name="theme-color" content="#4f46e5">
+    <title>Hate Speech Detection | AI Analysis Tool</title>
     <link rel="stylesheet" href="/static/css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
     <div class="app-container">
         <header class="app-header">
             <div class="header-content">
-                <h1><i class="fas fa-shield-alt"></i> Hate Speech Detection</h1>
-                <p class="subtitle">Analyze Text for Harmful Content for Roman Urdu Language</p>
+                <h1><i class="fas fa-shield-alt" aria-hidden="true"></i> Hate Speech Detection</h1>
+                <p class="subtitle">Analyze Text for Harmful Content in Roman Urdu using Machine Learning</p>
             </div>
         </header>
 
         <main class="main-content">
             <div class="analysis-container">
-                <form action="/" method="POST" class="analysis-form">
+                <form action="/" method="POST" class="analysis-form" id="analysis-form">
                     <div class="input-group">
-                        <label for="tweet-input">Enter Text for Analysis:</label>
-                        <textarea 
-                            id="tweet-input"
-                            name="tweet" 
-                            rows="5" 
-                            placeholder="Type or paste your text here..."
-                            required></textarea>
+                        <label for="tweet-input">
+                            <i class="fas fa-pen-to-square"></i>
+                            Enter Text for Analysis
+                        </label>
+                        <div class="input-wrapper">
+                            <textarea 
+                                id="tweet-input"
+                                name="tweet" 
+                                rows="5" 
+                                placeholder="Type or paste your Roman Urdu text here..."
+                                maxlength="1000"
+                                aria-describedby="char-counter sample-help"
+                                required></textarea>
+                        </div>
+                        <div class="input-meta">
+                            <span id="sample-help" class="hint-text">
+                                <i class="fas fa-lightbulb"></i> Try a sample below
+                            </span>
+                            <span id="char-counter" class="char-counter">0 / 1000</span>
+                        </div>
                     </div>
-                    <button type="submit" class="analyze-btn">
-                        <i class="fas fa-search"></i> Analyze Text
-                    </button>
+
+                    <!-- Sample Text Chips -->
+                    <div class="sample-section">
+                        <p class="sample-label">Sample Texts</p>
+                        <div class="sample-chips" role="list">
+                            <button type="button" class="sample-chip" data-text="ye acchi baat hai" role="listitem">
+                                <i class="fas fa-smile"></i> Normal
+                            </button>
+                            <button type="button" class="sample-chip" data-text="tum bohat achay ho" role="listitem">
+                                <i class="fas fa-heart"></i> Positive
+                            </button>
+                            <button type="button" class="sample-chip" data-text="ye gandi baat hai" role="listitem">
+                                <i class="fas fa-triangle-exclamation"></i> Hateful
+                            </button>
+                            <button type="button" class="sample-chip" data-text="main ne yeh kaam kiya hai" role="listitem">
+                                <i class="fas fa-briefcase"></i> Neutral
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="analyze-btn" id="analyze-btn">
+                            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+                            <span class="btn-text">Analyze Text</span>
+                        </button>
+                        <button type="button" class="clear-btn" id="clear-btn">
+                            <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                            Clear
+                        </button>
+                    </div>
                 </form>
 
                 {% if prediction %}
-                <div class="result-container {{ 'positive' if prediction == 'Normal Tweet' else 'negative' }}">
-                    <div class="result-icon">
-                        {% if prediction == 'Normal Tweet' %}
-                        <i class="fas fa-check-circle"></i>
-                        {% else %}
-                        <i class="fas fa-exclamation-triangle"></i>
-                        {% endif %}
-                    </div>
-                    <div class="result-content">
-                        <h3>Analysis Result</h3>
-                        <p class="result-text">{{ prediction }}</p>
+                <div class="result-wrapper" role="status" aria-live="polite">
+                    <div class="result-container {{ 'positive' if prediction == 'Normal Tweet' else 'negative' }}">
+                        <div class="result-icon" aria-hidden="true">
+                            {% if prediction == 'Normal Tweet' %}
+                            <i class="fas fa-circle-check"></i>
+                            {% else %}
+                            <i class="fas fa-triangle-exclamation"></i>
+                            {% endif %}
+                        </div>
+                        <div class="result-content">
+                            <span class="result-badge">
+                                {% if prediction == 'Normal Tweet' %}Safe{% else %}Warning{% endif %}
+                            </span>
+                            <h3>
+                                {% if prediction == 'Normal Tweet' %}Content Looks Safe{% else %}Hateful Content Detected{% endif %}
+                            </h3>
+                            <p class="result-text">{{ prediction }}</p>
+                            <div class="result-meta">
+                                <i class="fas fa-robot"></i>
+                                <span>Analyzed by AI Model</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
@@ -55,9 +108,17 @@
         </main>
 
         <footer class="app-footer">
-            <p>Powered by Machine Learning | <i class="fas fa-code"></i> AI Analysis Tool</p>
+            <p>
+                <i class="fas fa-brain" aria-hidden="true"></i>
+                Powered by Machine Learning
+                <span aria-hidden="true">|</span>
+                <i class="fas fa-code" aria-hidden="true"></i>
+                AI Analysis Tool
+            </p>
         </footer>
     </div>
+
+    <script src="/static/js/app.js"></script>
 </body>
 
 </html>
