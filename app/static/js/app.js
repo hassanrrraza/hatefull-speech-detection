@@ -20,7 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const wordCounter = document.getElementById('word-counter');
     const readTimeEl = document.getElementById('read-time');
     const charMeter = document.getElementById('char-meter');
-    const inputCard = textarea ? textarea.closest('.input-card') : null;
+    const inputCard = document.getElementById('input-card') || (textarea ? textarea.closest('.input-card') : null);
+    const inputLiveBadge = document.getElementById('input-live-badge');
+    const inputLiveText = inputLiveBadge ? inputLiveBadge.querySelector('.live-text') : null;
     const resultWrapper = document.getElementById('result-wrapper');
     const historyList = document.getElementById('history-list');
     const clearHistoryBtn = document.getElementById('clear-history-btn');
@@ -95,6 +97,37 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
 
     // -------------------------------------------------------------------------
+    // Input Area Live Status & Micro-Animation Helper
+    // -------------------------------------------------------------------------
+    let liveStatusTimeout = null;
+    function setLiveStatus(type, label, timeoutMs = 0) {
+        if (!inputLiveBadge || !inputLiveText) return;
+        if (liveStatusTimeout) clearTimeout(liveStatusTimeout);
+
+        inputLiveBadge.className = 'input-live-badge';
+        if (type) inputLiveBadge.classList.add(type);
+        inputLiveText.textContent = label;
+
+        if (timeoutMs > 0) {
+            liveStatusTimeout = setTimeout(() => {
+                inputLiveBadge.className = 'input-live-badge';
+                inputLiveText.textContent = 'Ready';
+            }, timeoutMs);
+        }
+    }
+
+    let prevWordCount = -1;
+    let prevCharCount = -1;
+    let typingDebounceTimer = null;
+
+    function triggerBounce(elem) {
+        if (!elem) return;
+        elem.classList.remove('counter-pop');
+        void elem.offsetWidth; // Force CSS reflow
+        elem.classList.add('counter-pop');
+    }
+
+    // -------------------------------------------------------------------------
     // Real-Time Input Metrics (Characters, Words, Read Time, Progress Bar)
     // -------------------------------------------------------------------------
     function updateMetrics() {
@@ -110,6 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 charCounter.classList.add('danger');
             } else if (length >= WARNING_CHARS) {
                 charCounter.classList.add('warning');
+            }
+            if (length !== prevCharCount) {
+                triggerBounce(charCounter);
+                prevCharCount = length;
             }
         }
 
@@ -129,6 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const words = text.trim() ? text.trim().split(/\s+/).length : 0;
         if (wordCounter) {
             wordCounter.innerHTML = `<i class="fas fa-file-lines"></i> ${words} ${words === 1 ? 'word' : 'words'}`;
+            if (words !== prevWordCount) {
+                triggerBounce(wordCounter);
+                prevWordCount = words;
+            }
         }
 
         // Estimated reading time
@@ -144,13 +185,116 @@ document.addEventListener('DOMContentLoaded', () => {
         textarea.style.height = `${Math.max(150, textarea.scrollHeight)}px`;
     }
 
+    // -------------------------------------------------------------------------
+    // Dynamic Typewriter Placeholder Animation
+    // -------------------------------------------------------------------------
+    const PLACEHOLDER_PROMPTS = [
+        "Type or paste Roman Urdu text here...",
+        "e.g. 'bohat shukriya aap ki madad ka, aap bohat achay insaan hain'...",
+        "e.g. 'ye gandi aur fazool baat hai bilkul bakwas aadmi ho'...",
+        "e.g. 'mashallah zabardast kaam kia bhai'...",
+        "e.g. 'kal subah 9 baje meeting shuru hogi sab waqt par ayen'..."
+    ];
+
+    let typewriterTimer = null;
+    let promptIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    let isTypewriterActive = false;
+
+    function startTypewriter() {
+        if (!textarea || textarea.value.trim().length > 0 || document.activeElement === textarea) {
+            return;
+        }
+        isTypewriterActive = true;
+        runTypewriterLoop();
+    }
+
+    function stopTypewriter() {
+        isTypewriterActive = false;
+        if (typewriterTimer) {
+            clearTimeout(typewriterTimer);
+            typewriterTimer = null;
+        }
+        if (textarea && !textarea.value.trim()) {
+            textarea.setAttribute('placeholder', "Type or paste Roman Urdu text here (e.g. 'ye bohat achi baat hai', 'aap ka shukriya')...");
+        }
+    }
+
+    function runTypewriterLoop() {
+        if (!isTypewriterActive || !textarea || textarea.value.trim().length > 0 || document.activeElement === textarea) {
+            return;
+        }
+
+        const fullStr = PLACEHOLDER_PROMPTS[promptIdx];
+        let delay = 40;
+
+        if (isDeleting) {
+            charIdx--;
+            delay = 20;
+        } else {
+            charIdx++;
+            delay = 45;
+        }
+
+        const curText = fullStr.substring(0, charIdx);
+        textarea.setAttribute('placeholder', curText + (charIdx < fullStr.length ? '▍' : ''));
+
+        if (!isDeleting && charIdx === fullStr.length) {
+            delay = 2200; // Hold completed prompt
+            isDeleting = true;
+        } else if (isDeleting && charIdx === 0) {
+            isDeleting = false;
+            promptIdx = (promptIdx + 1) % PLACEHOLDER_PROMPTS.length;
+            delay = 550; // Pause before typing next prompt
+        }
+
+        typewriterTimer = setTimeout(runTypewriterLoop, delay);
+    }
+
     if (textarea) {
         textarea.addEventListener('input', () => {
+            stopTypewriter();
             updateMetrics();
             autoResizeTextarea();
+
+            // Typing micro-animation on input card
+            if (inputCard) {
+                inputCard.classList.add('is-typing');
+                setLiveStatus('typing', 'Typing...');
+            }
+
+            if (typingDebounceTimer) clearTimeout(typingDebounceTimer);
+            typingDebounceTimer = setTimeout(() => {
+                if (inputCard) {
+                    inputCard.classList.remove('is-typing');
+                }
+                setLiveStatus('', 'Ready');
+            }, 850);
         });
+
+        textarea.addEventListener('focus', () => {
+            stopTypewriter();
+            if (inputCard) {
+                inputCard.classList.add('has-focus');
+            }
+        });
+
+        textarea.addEventListener('blur', () => {
+            if (inputCard) {
+                inputCard.classList.remove('has-focus', 'is-typing');
+            }
+            if (!textarea.value.trim()) {
+                setTimeout(startTypewriter, 1200);
+            }
+        });
+
         updateMetrics();
         autoResizeTextarea();
+
+        if (!textarea.value.trim()) {
+            setTimeout(startTypewriter, 1800);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -177,20 +321,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     function insertSampleText(text, label = 'Sample') {
         if (!textarea) return;
+        stopTypewriter();
 
         textarea.value = text;
         updateMetrics();
         autoResizeTextarea();
         textarea.focus();
 
-        // Subtle animation on input card
+        // High-tech flash wave on input card
         if (inputCard) {
-            inputCard.style.transform = 'scale(0.99)';
+            inputCard.classList.remove('sample-injected');
+            void inputCard.offsetWidth; // Force CSS animation restart
+            inputCard.classList.add('sample-injected');
             setTimeout(() => {
-                inputCard.style.transform = '';
-            }, 150);
+                inputCard.classList.remove('sample-injected');
+            }, 600);
         }
 
+        setLiveStatus('typing', 'Sample Loaded', 1500);
         showToast(`Loaded "${label}" into analysis console`, 'info', 'fa-sparkles');
     }
 
@@ -210,16 +358,25 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const text = await navigator.clipboard.readText();
                 if (text && text.trim()) {
+                    stopTypewriter();
                     textarea.value = text.trim();
                     updateMetrics();
                     autoResizeTextarea();
                     textarea.focus();
+
+                    if (inputCard) {
+                        inputCard.classList.remove('sample-injected');
+                        void inputCard.offsetWidth;
+                        inputCard.classList.add('sample-injected');
+                        setTimeout(() => inputCard.classList.remove('sample-injected'), 600);
+                    }
+
+                    setLiveStatus('typing', 'Pasted', 1500);
                     showToast('Pasted text from clipboard', 'success', 'fa-paste');
                 } else {
                     showToast('Clipboard is empty or does not contain text', 'info', 'fa-triangle-exclamation');
                 }
             } catch (err) {
-                // Clipboard permissions might be denied
                 showToast('Clipboard access was blocked by browser. Please paste manually.', 'info', 'fa-key');
             }
         });
@@ -237,11 +394,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearInput() {
         if (!textarea) return;
-        textarea.value = '';
-        updateMetrics();
-        autoResizeTextarea();
-        textarea.focus();
-        showToast('Console cleared', 'info', 'fa-rotate-left');
+        stopTypewriter();
+
+        // Smooth wipe animation on textarea before resetting
+        textarea.classList.add('clearing');
+        setLiveStatus('cleared', 'Cleared', 1200);
+
+        setTimeout(() => {
+            textarea.value = '';
+            textarea.classList.remove('clearing');
+            updateMetrics();
+            autoResizeTextarea();
+            textarea.focus();
+            showToast('Console cleared', 'info', 'fa-rotate-left');
+            setTimeout(startTypewriter, 2500);
+        }, 160);
     }
 
     if (clearBtn) {
@@ -516,6 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (inputCard) {
                 inputCard.classList.add('scanning');
             }
+            setLiveStatus('scanning', 'Scanning AI...');
 
             try {
                 const response = await fetch('/api/analyze', {
@@ -549,12 +717,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     });
 
+                    // Update live badge with verdict
+                    setLiveStatus(
+                        data.is_hateful ? 'danger' : 'safe', 
+                        data.is_hateful ? 'Hate Detected' : 'Verified Safe', 
+                        3500
+                    );
+
                     showToast(
                         data.is_hateful ? 'Warning: Hateful content detected!' : 'Analysis complete: Content appears safe.',
                         data.is_hateful ? 'info' : 'success',
                         data.is_hateful ? 'fa-triangle-exclamation' : 'fa-circle-check'
                     );
                 } else {
+                    setLiveStatus('danger', 'Error', 2500);
                     showToast(data.error || 'Prediction failed', 'info', 'fa-triangle-exclamation');
                 }
             } catch (err) {
