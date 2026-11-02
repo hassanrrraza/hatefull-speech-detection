@@ -172,11 +172,18 @@
                         </div>
 
                         <!-- Textarea Wrapper -->
-                        <div class="input-card">
+                        <div class="input-card" id="input-card">
+                            <div class="input-glow-border" aria-hidden="true"></div>
                             <div class="input-toolbar">
-                                <label for="tweet-input" class="input-label">
-                                    <i class="fas fa-pen-nib"></i> Roman Urdu Text
-                                </label>
+                                <div class="toolbar-left">
+                                    <label for="tweet-input" class="input-label">
+                                        <i class="fas fa-pen-nib"></i> Roman Urdu Text
+                                    </label>
+                                    <div class="input-live-badge" id="input-live-badge" title="Input status">
+                                        <span class="live-dot"></span>
+                                        <span class="live-text">Ready</span>
+                                    </div>
+                                </div>
                                 <div class="toolbar-actions">
                                     <button type="button" class="tool-btn" id="paste-btn" title="Paste text from clipboard">
                                         <i class="fas fa-paste"></i>
@@ -203,7 +210,8 @@
                                     aria-describedby="char-counter word-counter"
                                     required>{{ user_input if user_input else '' }}</textarea>
                                 
-                                <!-- Scanner Radar Beam (Active during loading) -->
+                                <!-- Scanner Radar Beam & Holographic Grid Overlay (Active during loading) -->
+                                <div class="scan-grid-overlay" aria-hidden="true"></div>
                                 <div class="scan-radar-beam" id="scan-radar" aria-hidden="true"></div>
                             </div>
 
